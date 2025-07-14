@@ -1,26 +1,45 @@
-import { Injectable } from '@nestjs/common';
-import { CreatePublishableApiKeyDto } from './dto/create-publishable_api_key.dto';
-import { UpdatePublishableApiKeyDto } from './dto/update-publishable_api_key.dto';
+import {
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { PublishableApiKey } from './entities/publishable_api_key.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class PublishableApiKeysService {
-  create(createPublishableApiKeyDto: CreatePublishableApiKeyDto) {
-    return 'This action adds a new publishableApiKey';
-  }
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly usersService: UsersService,
+    @InjectRepository(PublishableApiKey)
+    private readonly publishableApiKeysRepository: Repository<PublishableApiKey>,
+  ) {}
+  async create(token: string) {
+    const decoded = this.jwtService.decode(token.split(' ')[1]);
 
-  findAll() {
-    return `This action returns all publishableApiKeys`;
-  }
+    if (!decoded.sub) {
+      throw new UnauthorizedException();
+    }
 
-  findOne(id: number) {
-    return `This action returns a #${id} publishableApiKey`;
-  }
+    const key = await this.publishableApiKeysRepository.create({
+      key: crypto.randomUUID(),
+    });
 
-  update(id: number, updatePublishableApiKeyDto: UpdatePublishableApiKeyDto) {
-    return `This action updates a #${id} publishableApiKey`;
-  }
+    const user = await this.usersService.findOne({
+      where: { id: decoded.sub },
+    });
 
-  remove(id: number) {
-    return `This action removes a #${id} publishableApiKey`;
+    if (!user) {
+      throw new ForbiddenException();
+    }
+
+    key.user = user;
+
+    await this.publishableApiKeysRepository.save(key);
+
+    return key;
   }
 }

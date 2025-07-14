@@ -6,9 +6,11 @@ import {
   UpdateDateColumn,
   BeforeInsert,
   BeforeUpdate,
+  OneToMany,
 } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { Exclude } from 'class-transformer';
+import { PublishableApiKey } from '../../publishable_api_keys/entities/publishable_api_key.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -24,6 +26,9 @@ export class User {
   @Column()
   @Exclude()
   password: string;
+
+  @OneToMany(() => PublishableApiKey, (key) => key.user)
+  keys: PublishableApiKey[];
 
   @CreateDateColumn({
     type: 'timestamp',
