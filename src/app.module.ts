@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { DatabaseConfig } from './config';
 import { AuthModule } from './auth/auth.module';
+import { PublishableApiKeysModule } from './publishable_api_keys/publishable_api_keys.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { AuthModule } from './auth/auth.module';
     }),
     UsersModule,
     AuthModule,
+    PublishableApiKeysModule,
   ],
   controllers: [AppController],
   providers: [AppService],
