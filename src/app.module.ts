@@ -7,6 +7,7 @@ import { UsersModule } from './users/users.module';
 import { DatabaseConfig } from './config';
 import { AuthModule } from './auth/auth.module';
 import { PublishableApiKeysModule } from './publishable_api_keys/publishable_api_keys.module';
+import { ProductsModule } from './products/products.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { PublishableApiKeysModule } from './publishable_api_keys/publishable_api
     UsersModule,
     AuthModule,
     PublishableApiKeysModule,
+    ProductsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
