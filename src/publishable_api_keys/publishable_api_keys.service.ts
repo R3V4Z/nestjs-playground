@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PublishableApiKey } from './entities/publishable_api_key.entity';
-import { Repository } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersService } from 'src/users/users.service';
 
@@ -41,5 +41,11 @@ export class PublishableApiKeysService {
     await this.publishableApiKeysRepository.save(key);
 
     return key;
+  }
+
+  async findOne(where: FindOneOptions): Promise<PublishableApiKey | null> {
+    const entry = await this.publishableApiKeysRepository.findOne(where);
+
+    return entry;
   }
 }
